@@ -1,0 +1,13 @@
+.card  {
+    box-shadow: none;
+    border: 2px solid var(--bulma-border-weak);
+}
+
+.panel  {
+    box-shadow: none;
+    border: 2px solid var(--bulma-border-weak);
+}
+
+.panel-heading {
+    padding: 1rem;
+}
