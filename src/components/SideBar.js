@@ -2,9 +2,7 @@
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 
-export default function SideBar({ children, isRight=false, title="asd", icon=<FaBars/> }) {
-    const [isOpen, setIsOpen] = useState(false)
-    
+export default function SideBar({ children, isRight=false, title="asd", icon=<FaBars/>, isOpen, setIsOpen }) {    
     function toggleOpen(e) {
         setIsOpen(!isOpen)
     }
