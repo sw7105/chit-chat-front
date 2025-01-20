@@ -11,6 +11,7 @@ export function useMainContext() {
 
 export function MainContextProvider({ children }) {
     const [userId, setUserId] = useSessionState('userId', null)
+    const [username, setUsername] = useSessionState('username', null)
     const {toasts, addToast, removeToast} = useToasts()
 
     return (
@@ -18,6 +19,8 @@ export function MainContextProvider({ children }) {
             value={{
                 userId,
                 setUserId,
+                username,
+                setUsername,
                 addToast
             }}
         >

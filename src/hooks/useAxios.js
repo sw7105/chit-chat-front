@@ -1,9 +1,13 @@
 'use client'
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useMainContext } from "@/app/mainContext";
 
 export function useAxios() {
-    const { addToast } = useMainContext()
+    const router = useRouter()
+    const { addToast, setUserId, setUsername } = useMainContext()
+    const axiosInstance = axios.create({})
+    axiosInstance.defaults.withCredentials = true
 
     function getApiUrl(route) {
         return process.env.NEXT_PUBLIC_API + route
@@ -21,12 +25,14 @@ export function useAxios() {
                 const url = getApiUrl('/session')
                 axios.get(url)
                 .then((response) => {
-                const data = response.data;
-                setUserId(data.userId)
+                    const data = response.data;
+                    setUserId(data.userId)
+                    setUsername(data.name)
                 })
                 .catch((error) => {
-                setUserId(null)
-                router.push("auth")
+                    setUserId(null)
+                    setUsername(null)
+                    router.replace("/auth")
                 })
             }
         } else {
@@ -35,7 +41,7 @@ export function useAxios() {
     }
 
     return {
-        axios,
+        axios: axiosInstance,
         handleError,
         getApiUrl
     }

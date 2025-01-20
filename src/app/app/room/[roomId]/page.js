@@ -69,7 +69,7 @@ export default function Room() {
 
         const url = getApiUrl('/send')
         axios.post(url, {
-            roomId: roomId,
+            roomId: parseInt(roomId),
             message: message
         })
         .then((response)=>{

@@ -9,7 +9,7 @@ import { Loading } from "@/components/Loading";
 
 export default function Auth() {
   const {axios, handleError, getApiUrl} = useAxios()
-  const {setUserId, addToast} = useMainContext()
+  const {setUserId, setUsername, addToast} = useMainContext()
   const router = useRouter();
   const [tab, setTab] = useState("login");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export default function Auth() {
     .then((response) => {
       const data = response.data;
       setUserId(data.userId)
-      router.push("/app")
+      router.replace("/app")
     })
     .catch((error) => {
       setIsPageLoading(false)
@@ -52,8 +52,9 @@ export default function Auth() {
       .then((response) => {
         const data = response.data;
         setUserId(data.userId)
+        setUsername(data.name)
         addToast('Log in success!', 'is-success')
-        router.push("/app")
+        router.replace("/app")
       })
       .catch((error) => {
         handleError(error)
@@ -63,12 +64,14 @@ export default function Auth() {
     } else if (tab == 'register') {
       const url = getApiUrl('/register')
       axios.post(url, {
+        name: name,
         login: login,
         password: password,
       })
       .then((response) => {
         const data = response.data;
         setUserId(data.userId)
+        setUsername(data.name)
         addToast('Register success!', 'is-success')
         router.push("/app")
       })

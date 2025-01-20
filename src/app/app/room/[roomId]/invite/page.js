@@ -8,20 +8,9 @@ import { useAppContext } from "../../../appContext";
 import { useAxios } from "@/hooks/useAxios";
 import { useMainContext } from "@/app/mainContext";
 
-function generateRandomString(length) {
-    const characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
-    return result;
-}
-
 export default function RoomInvite({ params }) {
     const { roomId } = use(params);
-    const [value, setValue] = useState(generateRandomString(8));
+    const [value, setValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const { axios, handleError, getApiUrl } = useAxios()
@@ -52,7 +41,7 @@ export default function RoomInvite({ params }) {
 
         const url = getApiUrl('/invite')
         axios.post(url, {
-            room: roomId,
+            roomId: parseInt(roomId),
         })
         .then((response) => {
             const data = response.data;
