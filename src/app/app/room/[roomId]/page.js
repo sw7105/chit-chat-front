@@ -14,12 +14,18 @@ export default function Room() {
     
     const { axios, handleError, getApiUrl } = useAxios()
     useEffect(()=>{
-        if (messagesLoaded == false) { return } 
+        if (messagesLoaded == false) { return }
         const url = getApiUrl(`/read?roomId=${roomId}${messages.length > 0 ? `&lastMessageId=${messages[messages.length-1].id}` : ''}`)
         axios.get(url)
         .then((response)=>{
             const data = response.data
-            setMessages([...messages, ...data.messages])
+            const newMessages = data.messages.filter(itemNew => 
+                !messages.some(itemOld => itemOld.id === itemNew.id)
+            );
+            const sortMessages = [...messages, ...newMessages].sort((a, b) => {
+                return new Date(a.date) - new Date(b.date);
+            });
+            setMessages(sortMessages)
         })
         .catch((error)=>{
             handleError(error)
@@ -32,7 +38,7 @@ export default function Room() {
     }, [messagesLoaded])
 
     useEffect(()=>{
-        const refreshInterval = setInterval(refreshMessages, 3000)
+        const refreshInterval = setInterval(refreshMessages, 1000)
         return ()=>{
             clearInterval(refreshInterval)
         }
@@ -44,7 +50,13 @@ export default function Room() {
         .then((response)=>{
             const data = response.data
             if (data.messages.length > 0) {
-                setMessages([...messages, ...data.messages])
+                const newMessages = data.messages.filter(itemNew => 
+                    !messages.some(itemOld => itemOld.id === itemNew.id)
+                );
+                const sortMessages = [...messages, ...newMessages].sort((a, b) => {
+                    return new Date(a.date) - new Date(b.date);
+                });
+                setMessages(sortMessages)
             }
         })
         .catch((error)=>{
@@ -84,15 +96,35 @@ export default function Room() {
             setIsLoading(false)
         })
         setIsLoading(true)
+        scrollToBottom(true)
+    }
+
+    function handleEnter(e) {
+        if (e.code != "Enter" || message.length == 0) {return}
+        handleSubmit(e)
     }
 
     useEffect(()=>{
         setError(false)
     }, [message])
 
+    const [isUserScrolling, setIsUserScrolling] = useState(false);
+    const prevMessages = useRef(null)
     useEffect(()=>{
-        scrollToBottom()
+        if (!isUserScrolling) {
+            if (!prevMessages.current || messages.length > prevMessages.current.length) {
+                scrollToBottom()
+            }
+        }
+        prevMessages.current = messages
     }, [messages])
+
+    function handleScroll() {
+        if (messageList.current) {
+            const { scrollTop, clientHeight, scrollHeight } = messageList.current;
+            setIsUserScrolling(scrollTop + clientHeight < scrollHeight - 50);
+        }
+    }
 
 
     return (
@@ -104,7 +136,7 @@ export default function Room() {
                 height: "100%",
             }}
         >
-            <div ref={messageList} className="is-flex-grow-1 is-flex-direction-column-reverse is-align-content-flex-end"
+            <div ref={messageList} onScroll={handleScroll} className="is-flex-grow-1 is-flex-direction-column-reverse is-align-content-flex-end"
                 style={{
                     overflowY: 'scroll',
                     marginBottom: '1rem',
@@ -122,8 +154,8 @@ export default function Room() {
 
             </div>
             <div className="field is-grouped">
-                <input value={message} onChange={(e)=>{setMessage(e.target.value)}} className={`input ${error != false ? 'is-danger' : ''}`} type="text" placeholder="Type a message..."/>
-                <button className={`button ${error != false ? 'is-danger' : ''} ${isLoading ? 'is-loading' : ''}`} onClick={handleSubmit}>
+                <input value={message} onKeyDown={handleEnter} onChange={(e)=>{setMessage(e.target.value)}} className={`input ${error != false ? 'is-danger' : ''}`} type="text" placeholder="Type a message..."/>
+                <button disabled={message.length == 0} className={`button ${error != false ? 'is-danger' : ''} ${isLoading ? 'is-loading' : ''}`} onClick={handleSubmit}>
                     <FaPaperPlane />
                 </button>
             </div>

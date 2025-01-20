@@ -1,4 +1,9 @@
+import { useParams } from "next/navigation"
+
+
 export default function Message({msg, prevMsg}) {
+    const { roomId } = useParams()
+
     var shouldContinue = false
     const date = new Date(msg.date)
     if (prevMsg) {
@@ -39,7 +44,7 @@ export default function Message({msg, prevMsg}) {
                 marginBottom: "-0.25rem",
                 marginTop: "0.5rem"
             }}>
-                <span className="label is-inline">{msg.owner?.name}</span>
+                <a className="label is-inline" href={`/app/profile/${msg.owner.id}?room=${roomId}`}>{msg.owner?.name}</a>
                 <span> </span>
                 <span className="help is-inline"
                     style={{

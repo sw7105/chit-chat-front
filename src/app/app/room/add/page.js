@@ -38,7 +38,7 @@ export default function Auth() {
       .then((response) => {
         const data = response.data
         addToast('Joined room!', 'is-success')
-        router.push("/app/room/"+data.roomId)
+        router.replace("/app/room/"+data.roomId)
       })
       .catch((error) => {
         handleError(error)
@@ -54,7 +54,7 @@ export default function Auth() {
       .then((response) => {
         const data = response.data;
         addToast('Room created!', 'is-success')
-        router.push("/app/room/"+data.roomId)
+        router.replace("/app/room/"+data.roomId)
       })
       .catch((error) => {
         handleError(error)
